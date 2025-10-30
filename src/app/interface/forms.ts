@@ -23,7 +23,7 @@ export interface PatientInfoProps {
 export interface GeneralSymptomQuestion {
   id: number;
   text: string;
-  // Có thể thêm isReverseScored: boolean; nếu bạn muốn xử lý logic tính điểm
+
 }
 
 export type GeneralSymptomAnswers = Record<number, number>; // { 1: 2, 2: 4, ... }
@@ -43,8 +43,8 @@ export interface PSQISurveyData {
   q5_g: "0" | "1" | "2" | "3" | undefined;
   q5_h: "0" | "1" | "2" | "3" | undefined;
   q5_i: "0" | "1" | "2" | "3" | undefined;
-  q5_j: "0" | "1" | "2" | "3" | undefined; // Cho vấn đề khác
-  q5_j_description?: string; // Mô tả nếu có vấn đề khác
+  q5_j: "0" | "1" | "2" | "3" | undefined; 
+  q5_j_description?: string;
   q6_sleep_meds: "0" | "1" | "2" | "3" | undefined;
   q7_driving_difficulty: "0" | "1" | "2" | "3" | undefined;
   q8_motivation_difficulty: "0" | "1" | "2" | "3" | undefined;
@@ -57,9 +57,9 @@ export interface ZungQuestion {
   text: string;
 }
 
-export type ZungSDSAnswers = Record<number, number>; // { 1: 0, 2: 1, ... }
+export type ZungSDSAnswers = Record<number, number>;
 
-// BeckBDI (hoặc BeckBAI)
+// BeckBDI 
 export interface BeckOption {
   value: number;
   text: string;
@@ -71,7 +71,7 @@ export interface BeckQuestionGroup {
   options: BeckOption[];
 }
 
-export type BeckBDIAnswers = Record<number, number>; // { 1: 0, 2: 1, ... }
+export type BeckBDIAnswers = Record<number, number>; 
 
 // DASS21
 export interface DASS21Question {
@@ -80,9 +80,8 @@ export interface DASS21Question {
   // Có thể thêm category: 'D' | 'A' | 'S'; để phân loại câu hỏi
 }
 
-export type DASS21Answers = Record<number, number>; // { 1: 0, 2: 1, ... }
+export type DASS21Answers = Record<number, number>; 
 
-// Tổng hợp dữ liệu từ tất cả các form
 export interface FullSurveyData {
   patientInfo?: PatientInfoData;
   generalSymptoms?: GeneralSymptomAnswers;
