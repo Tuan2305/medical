@@ -1,4 +1,3 @@
-// app/pages/SurveyPage.tsx
 import React, { useState } from 'react';
 import PatientInfo from '../components/forms/PatientInfo';
 import GeneralSymptomAssessment from '../components/forms/GeneralSymptomAssessment';
@@ -6,13 +5,15 @@ import PSQISurvey from '../components/forms/PSQISurvey';
 import ZungSDS from '../components/forms/ZungSDS';
 import BeckBDI from '../components/forms/BeckBDI';
 import DASS21 from '../components/forms/DASS21';
-import { FullSurveyData, PatientInfoData, GeneralSymptomAnswers, PSQISurveyData, ZungSDSAnswers, BeckBDIAnswers, DASS21Answers } from '../interface/forms';
+import ResultsPage from '../components/results/ResultsPage';
+import type { FullSurveyData, PatientInfoData, GeneralSymptomAnswers, PSQISurveyData, ZungSDSAnswers, BeckBDIAnswers, DASS21Answers } from '../interface/forms';
 
-const TOTAL_STEPS = 6; // PatientInfo + 5 forms
+const TOTAL_STEPS = 6;
 
 const SurveyPage: React.FC = () => {
   const [step, setStep] = useState<number>(0);
   const [formData, setFormData] = useState<FullSurveyData>({});
+  const [showResults, setShowResults] = useState<boolean>(false);
 
   const handleNext = <T extends keyof FullSurveyData>(key: T, data: FullSurveyData[T]) => {
     setFormData(prev => ({ ...prev, [key]: data }));
@@ -25,22 +26,25 @@ const SurveyPage: React.FC = () => {
 
   const handleSubmitAll = (finalData: DASS21Answers) => {
     const finalFormData: FullSurveyData = { ...formData, dass21: finalData };
-    setFormData(finalFormData); // Cập nhật state với dữ liệu cuối cùng
+    setFormData(finalFormData);
     console.log("Dữ liệu khảo sát hoàn chỉnh:", finalFormData);
-    alert("Khảo sát đã hoàn thành và dữ liệu đã được gửi!");
-    // TODO: Gửi `finalFormData` đến backend
-    // fetch('/api/submit-survey', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(finalFormData),
-    // })
-    // .then(response => response.json())
-    // .then(data => console.log('Success:', data))
-    // .catch((error) => console.error('Error:', error));
-
-    setStep(0); // Quay lại trang đầu
-    setFormData({}); // Xóa dữ liệu cho khảo sát mới
+    
+    // TODO: Gửi dữ liệu lên server
+    // await submitSurveyData(finalFormData);
+    
+    setShowResults(true);
   };
+
+  const handleRestart = () => {
+    setStep(0);
+    setFormData({});
+    setShowResults(false);
+  };
+
+  // Hiển thị trang kết quả nếu đã hoàn thành
+  if (showResults) {
+    return <ResultsPage surveyData={formData} onRestart={handleRestart} />;
+  }
 
   const renderForm = () => {
     switch (step) {
@@ -86,7 +90,7 @@ const SurveyPage: React.FC = () => {
       case 5:
         return (
           <DASS21
-            onNext={handleSubmitAll} // Form cuối cùng sẽ gọi handleSubmitAll
+            onNext={handleSubmitAll}
             onPrev={handlePrev}
             initialData={formData.dass21}
           />
@@ -96,10 +100,7 @@ const SurveyPage: React.FC = () => {
           <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg my-8 text-center text-xl font-semibold">
             <p>Khảo sát đã hoàn tất hoặc đang chờ xử lý.</p>
             <button
-              onClick={() => {
-                setStep(0);
-                setFormData({});
-              }}
+              onClick={handleRestart}
               className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-lg font-semibold"
             >
               Bắt đầu khảo sát mới
@@ -111,9 +112,7 @@ const SurveyPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans antialiased">
-      <header className="bg-blue-700 text-white py-4 shadow-md">
-        <h1 className="text-3xl text-center font-bold">Hệ thống khảo sát sức khỏe Bệnh viện</h1>
-      </header>
+    
       <main className="container mx-auto px-4 py-8">
         {renderForm()}
         {step < TOTAL_STEPS && (
